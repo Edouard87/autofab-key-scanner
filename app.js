@@ -35,7 +35,7 @@ console.log(HIDpath);
 // var device = new HID.HID(HIDpath)
 console.log(HIDPID)
 console.log(HIDVID)
-var device = new HID.HID(HIDVID, HIDPID)
+var device = new HID.HID(HIDpath)
 
 var socket = require('socket.io-client')('http://localhost:3000');
 socket.on('connect', function () { console.log("connected!") });
