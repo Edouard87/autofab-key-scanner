@@ -10,7 +10,38 @@ const users = require('./routes/user');
 const express = require('express');
 const app = express();
 const server = require("http").Server(app);
-const io = require("socket.io")(server)
+
+const HID = require("node-hid");
+
+// Connecting to the scanner
+
+var devices = HID.devices();
+console.log(devices);
+var HIDpath;
+for (var i = 0; i < devices.length; i++) {
+
+    if (devices[i].product === 'IC Reader') {
+
+        console.log("Found!")
+        HIDpath = devices[i].path;
+        HIDVID = devices[i].vendorId;
+        HIDPID = devices[i].productId;
+        break;
+
+    }
+
+}
+console.log(HIDpath);
+// var device = new HID.HID(HIDpath)
+console.log(HIDPID)
+console.log(HIDVID)
+var device = new HID.HID(HIDVID, HIDPID)
+
+var socket = require('socket.io-client')('http://localhost:3000');
+socket.on('connect', function () { console.log("connected!") });
+socket.on('data', function (data) { console.log(data) });
+socket.emit("trigger", {rfid:"123hdidhf"});
+socket.on('disconnect', function () { });
 
 const env = process.env.NODE_ENV || 'development';
 app.locals.ENV = env;
@@ -66,17 +97,31 @@ app.use((err, req, res, next) => {
     });
 });
 
-io.on("connection", function(socket) {
+// console.log("Attempting to connect!")
 
-    socket.emit('news', {data:'name'});
-    socket.on("event", function(data) {
+// const socket = ioClient.connect("localhost:3000");
+// socket.on("connect", function (sock) {
 
-        console.log("data")
+//     console.log("connected!")
+//     sock.on("data", function(data) {
 
-    })
+//         console.log(data)
 
-});
+//     });
 
-server.listen(3000);
+// });
+
+// io.on("connection", function(socket) {
+
+//     socket.emit('news', {data:'name'});
+//     socket.on("event", function(data) {
+
+//         console.log("data")
+
+//     })
+
+// });
+
+server.listen(30000);
 
 // module.exports = app;

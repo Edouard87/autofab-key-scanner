@@ -16,8 +16,10 @@
     "ejs": "^2.3.1",
     "express": "^4.13.3",
     "morgan": "^1.6.1",
+    "node-hid": "^0.7.9",
     "serve-favicon": "^2.3.0",
-    "socket.io": "^2.3.0"
+    "socket.io": "^2.3.0",
+    "socket.io-client": "^2.3.0"
   },
   "devDependencies": {
     "chai": "^3.5.0",
