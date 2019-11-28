@@ -1,41 +1,46 @@
-const path = require('path');
-const favicon = require('serve-favicon');
-const logger = require('morgan');
-const cookieParser = require('cookie-parser');
-const bodyParser = require('body-parser');
+// const path = require('path');
+// const favicon = require('serve-favicon');
+// const logger = require('morgan');
+// const cookieParser = require('cookie-parser');
+// const bodyParser = require('body-parser');
 
-const routes = require('./routes/index');
-const users = require('./routes/user');
+// const routes = require('./routes/index');
+// const users = require('./routes/user');
 
 const express = require('express');
 const app = express();
 const server = require("http").Server(app);
 
-const HID = require("node-hid");
+// const HID = require("node-hid");
 
 // Connecting to the scanner
 
-var devices = HID.devices();
-console.log(devices);
-var HIDpath;
-for (var i = 0; i < devices.length; i++) {
+const rfid = require("node-rfid");
+rfid.read()
 
-    if (devices[i].product === 'IC Reader') {
 
-        console.log("Found!")
-        HIDpath = devices[i].path;
-        HIDVID = devices[i].vendorId;
-        HIDPID = devices[i].productId;
-        break;
 
-    }
+// var devices = HID.devices();
+// console.log(devices);
+// var HIDpath;
+// for (var i = 0; i < devices.length; i++) {
 
-}
-console.log(HIDpath);
+//     if (devices[i].product === 'IC Reader') {
+
+//         console.log("Found!")
+//         HIDpath = devices[i].path;
+//         HIDVID = devices[i].vendorId;
+//         HIDPID = devices[i].productId;
+//         break;
+
+//     }
+
+// }
+// console.log(HIDpath);
 // var device = new HID.HID(HIDpath)
-console.log(HIDPID)
-console.log(HIDVID)
-var device = new HID.HID(HIDpath)
+// console.log(HIDPID)
+// console.log(HIDVID)
+// var device = new HID.HID(HIDpath)
 
 var socket = require('socket.io-client')('http://localhost:3000');
 socket.on('connect', function () { console.log("connected!") });
@@ -43,14 +48,14 @@ socket.on('data', function (data) { console.log(data) });
 socket.emit("trigger", {rfid:"123hdidhf"});
 socket.on('disconnect', function () { });
 
-const env = process.env.NODE_ENV || 'development';
-app.locals.ENV = env;
-app.locals.ENV_DEVELOPMENT = env == 'development';
+// const env = process.env.NODE_ENV || 'development';
+// app.locals.ENV = env;
+// app.locals.ENV_DEVELOPMENT = env == 'development';
 
 // view engine setup
 
-app.set('views', path.join(__dirname, 'views'));
-app.set('view engine', 'ejs');
+// app.set('views', path.join(__dirname, 'views'));
+// app.set('view engine', 'ejs');
 
 // app.use(favicon(__dirname + '/public/img/favicon.ico'));
 app.use(logger('dev'));
