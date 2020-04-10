@@ -1,132 +1,133 @@
-// const path = require('path');
-// const favicon = require('serve-favicon');
-// const logger = require('morgan');
-// const cookieParser = require('cookie-parser');
-// const bodyParser = require('body-parser');
+// Require modules
 
-// const routes = require('./routes/index');
-// const users = require('./routes/user');
+var fs = require("fs");
+const ip = require("ip")
 
-const express = require('express');
-const app = express();
-const server = require("http").Server(app);
+// Require config
 
-// const HID = require("node-hid");
+const config = require("./config.json")
 
-// Connecting to the scanner
+const encrypt = require("socket.io-encrypt")
+var socket = require('socket.io-client')(config.server_ip + ":" + config.server_port);
+encrypt(config.secret)(socket)
 
-const rfid = require("node-rfid");
-rfid.read()
+// Start by finding a server to connect to.
 
+// console.log("starting...")
 
+// const netList = require('network-list');
 
-// var devices = HID.devices();
-// console.log(devices);
-// var HIDpath;
-// for (var i = 0; i < devices.length; i++) {
+// console.log("Scanning. This may take a while.")
 
-//     if (devices[i].product === 'IC Reader') {
+// netList.scan({}, (err, arr) => {
+//     console.log(arr); // array with all devices
+//     for (var i = 0; i < arr.length; i++) {
 
-//         console.log("Found!")
-//         HIDpath = devices[i].path;
-//         HIDVID = devices[i].vendorId;
-//         HIDPID = devices[i].productId;
-//         break;
+//         if (arr[i].ip="192.168.16.104") {
+
+//             console.log("Found!")
+//             console.log(arr[i])
+
+//         }
 
 //     }
+//     if (err) {console.log(err)}
+// });
 
-// }
-// console.log(HIDpath);
-// var device = new HID.HID(HIDpath)
-// console.log(HIDPID)
-// console.log(HIDVID)
-// var device = new HID.HID(HIDpath)
+// netList.scanEach({}, (err, obj) => {
+//     io.connect(obj.ip + ":3000", function(err) {
 
-var socket = require('socket.io-client')('http://localhost:3000');
-socket.on('connect', function () { console.log("connected!") });
-socket.on('data', function (data) { console.log(data) });
-socket.emit("trigger", {rfid:"123hdidhf"});
-socket.on('disconnect', function () { });
-
-// const env = process.env.NODE_ENV || 'development';
-// app.locals.ENV = env;
-// app.locals.ENV_DEVELOPMENT = env == 'development';
-
-// view engine setup
-
-// app.set('views', path.join(__dirname, 'views'));
-// app.set('view engine', 'ejs');
-
-// app.use(favicon(__dirname + '/public/img/favicon.ico'));
-app.use(logger('dev'));
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({
-  extended: true
-}));
-app.use(cookieParser());
-app.use(express.static(path.join(__dirname, 'public')));
-
-app.use('/', routes);
-app.use('/users', users);
-
-/// catch 404 and forward to error handler
-app.use((req, res, next) => {
-    const err = new Error('Not Found');
-    err.status = 404;
-    next(err);
-});
-
-/// error handlers
-
-// development error handler
-// will print stacktrace
-if (app.get('env') === 'development') {
-    app.use((err, req, res, next) => {
-        res.status(err.status || 500);
-        res.render('error', {
-            message: err.message,
-            error: err,
-            title: 'error'
-        });
-    });
-}
-
-// production error handler
-// no stacktraces leaked to user
-app.use((err, req, res, next) => {
-    res.status(err.status || 500);
-    res.render('error', {
-        message: err.message,
-        error: {},
-        title: 'error'
-    });
-});
-
-// console.log("Attempting to connect!")
-
-// const socket = ioClient.connect("localhost:3000");
-// socket.on("connect", function (sock) {
-
-//     console.log("connected!")
-//     sock.on("data", function(data) {
-
-//         console.log(data)
+//         console.log(err);
 
 //     });
-
+//     console.log(obj);
 // });
 
-// io.on("connection", function(socket) {
 
-//     socket.emit('news', {data:'name'});
-//     socket.on("event", function(data) {
+// The server has been found. Connect to it.
 
-//         console.log("data")
+socket.on('connect', function () {
+    socket.emit("handshake", {text: config.text, ip: ip.address()})
+});
 
-//     })
+socket.emit("scan", {
 
-// });
+    rfid: 123,
+    machine: config.machine
 
-server.listen(30000);
+});
+socket.on("readers_update", function() {
 
-// module.exports = app;
+    socket.emit("readers_return", {
+        machine: config.machine,
+        ip: ip.address()
+    });
+
+});
+socket.on("status", data => {
+
+    console.log("Status: " + data.status)
+
+    if (data.status == "usr_match") {
+
+        console.log("The user was found. The user is " + data.user);
+
+    }
+
+    if (data.status == "authorized") {
+
+        console.log("authorized")
+        var sessionCheck = setInterval(function() {
+
+            console.log("checking...")
+
+            if (Math.floor(new Date().getTime() / 1000) >= data.end) {
+
+                clearInterval(sessionCheck)
+                console.log("session expired")
+
+            }
+
+        }, 100);
+        // console.log(sessionCheck)
+
+    } 
+
+    if (data.status == "no_rez") {
+
+        console.log("No resrevation was made for this time slot by you")
+        console.log("test")
+        console.log(data.machine)
+
+    }
+
+    if (data.status == "does_not_exist") {
+
+        console.log("The machine does not exist. Please reconfigure this scanner and supply an assigned ID")
+
+    }
+
+});
+socket.on("reader_change_machine", function(data) {
+
+    console.log("changing...")
+    console.log(data);
+
+    if (ip.address() == data.destination) {
+
+        fs.writeFileSync(__dirname + "/config.json", JSON.stringify({
+            machine: data.new_machine,
+            server_ip: config.server_ip,
+            server_port: config.server_port
+        }));
+        config = JSON.parse(fs.readFileSync(__dirname + "/config.json", "utf-8"));
+
+    }
+
+})
+
+socket.on("connect_error", function () {
+
+    console.log("Unable to comnnect.")
+
+})
