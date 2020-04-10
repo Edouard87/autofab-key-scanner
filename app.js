@@ -11,42 +11,10 @@ const encrypt = require("socket.io-encrypt")
 var socket = require('socket.io-client')(config.server_ip + ":" + config.server_port);
 encrypt(config.secret)(socket)
 
-// Start by finding a server to connect to.
-
-// console.log("starting...")
-
-// const netList = require('network-list');
-
-// console.log("Scanning. This may take a while.")
-
-// netList.scan({}, (err, arr) => {
-//     console.log(arr); // array with all devices
-//     for (var i = 0; i < arr.length; i++) {
-
-//         if (arr[i].ip="192.168.16.104") {
-
-//             console.log("Found!")
-//             console.log(arr[i])
-
-//         }
-
-//     }
-//     if (err) {console.log(err)}
-// });
-
-// netList.scanEach({}, (err, obj) => {
-//     io.connect(obj.ip + ":3000", function(err) {
-
-//         console.log(err);
-
-//     });
-//     console.log(obj);
-// });
-
-
-// The server has been found. Connect to it.
+console.log("System starting up...")
 
 socket.on('connect', function () {
+    console.log("Connected!")
     socket.emit("handshake", {text: config.text, ip: ip.address()})
 });
 
