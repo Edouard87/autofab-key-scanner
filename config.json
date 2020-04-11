@@ -1,6 +1,6 @@
 {
-    "server_ip":"http://localhost",
-    "server_port":3000,
+    "server_ip":"https://autofab.herokuapp.com",
+    "server_port":443,
     "text":"test reader",
     "secret":"secret"
 }
