@@ -17,21 +17,24 @@ console.log("System starting up...")
 socket.on('connect', function () {
     console.log("Connected!")
     socket.emit("handshake", {text: config.text, ip: ip.address()})
+    let options = {
+        mode: 'text',
+        pythonPath: config.python,
+        pythonOptions: ['-u'], // get print results in real-time
+        scriptPath: __dirname,
+        args: ['value1', 'value2', 'value3']
+    };
+
+    let shell = new PythonShell('read.py', options);
+
+    shell.on("message", message => {
+        console.log("message is: " + message)
+        socket.emit("scan", {
+            id: message,
+            ip: ip.address()
+        })
+    })
 });
-
-let options = {
-    mode: 'text',
-    pythonPath: config.python,
-    pythonOptions: ['-u'], // get print results in real-time
-    scriptPath: __dirname,
-    args: ['value1', 'value2', 'value3']
-};
-
-let shell = new PythonShell('read.py', options);
-
-shell.on("message", message => {
-    console.log("message is: " + message)
-})
 
 socket.on("readers_update", function() {
 
