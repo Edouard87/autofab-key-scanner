@@ -12,7 +12,6 @@ let options = {
 let shell = new PythonShell('read.py', options);
 
 shell.on("message", message => {
-    console.log(message)
-    console.log(message.split())
+    console.log("message is: " + message)
 })
 

@@ -5,5 +5,5 @@ reader = SimpleMFRC522()
 
 while True:
     id, text = reader.read()
-    print(id, text)
+    print(text)
     sleep(1)
