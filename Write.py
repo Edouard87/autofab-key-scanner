@@ -12,3 +12,6 @@ try:
         print("Written")
 finally:
         GPIO.cleanup()
+
+
+        

@@ -17,7 +17,6 @@ socket.on('connect', function () {
     console.log("Connected!")
     socket.emit("handshake", {text: config.text, ip: ip.address()})
 });
-
 socket.emit("scan", {
 
     rfid: 123,
