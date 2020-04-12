@@ -2,6 +2,7 @@
 
 var fs = require("fs");
 const ip = require("ip")
+var {PythonShell} = require("python-shell");
 
 // Require config
 
@@ -17,12 +18,21 @@ socket.on('connect', function () {
     console.log("Connected!")
     socket.emit("handshake", {text: config.text, ip: ip.address()})
 });
-socket.emit("scan", {
 
-    rfid: 123,
-    machine: config.machine
+let options = {
+    mode: 'text',
+    pythonPath: config.python,
+    pythonOptions: ['-u'], // get print results in real-time
+    scriptPath: __dirname,
+    args: ['value1', 'value2', 'value3']
+};
 
-});
+let shell = new PythonShell('read.py', options);
+
+shell.on("message", message => {
+    console.log("message is: " + message)
+})
+
 socket.on("readers_update", function() {
 
     socket.emit("readers_return", {
