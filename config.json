@@ -2,5 +2,7 @@
     "server_ip":"https://autofab.herokuapp.com",
     "server_port":443,
     "text":"test reader",
-    "secret":"secret"
+    "secret":"secret",
+    "python": "/usr/bin/python"
 }
+

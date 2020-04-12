@@ -1,8 +1,9 @@
 var {PythonShell} = require("python-shell");
+const config = require("./config.json")
 
 let options = {
     mode: 'text',
-    pythonPath: '/usr/local/bin/python',
+    pythonPath: config.python,
     pythonOptions: ['-u'], // get print results in real-time
     scriptPath: __dirname,
     args: ['value1', 'value2', 'value3']
