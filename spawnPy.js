@@ -13,5 +13,6 @@ let shell = new PythonShell('read.py', options);
 
 shell.on("message", message => {
     console.log("message is: " + message)
+    // let lcdProcess = new PythonShell("test.py",options)
 })
 

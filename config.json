@@ -3,6 +3,6 @@
     "server_port":443,
     "text":"test reader",
     "secret":"secret",
-    "python": "/usr/bin/python"
+    "python": "/usr/local/bin/python"
 }
 
