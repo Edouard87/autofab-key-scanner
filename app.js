@@ -66,6 +66,7 @@ socket.on("user", (data) => {
 
 lcd.on('ready', _ => {
     setInterval(() => {
+	lcd.clear()
         lcd.setCursor(0, 0);
         lcd.print(msg);
     },1000);
