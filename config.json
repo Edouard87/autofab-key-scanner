@@ -6,7 +6,7 @@
     "python": "/usr/local/bin/python",
     "env": {
         "dev":true,
-        "rfid":1234
+        "rfid": 1234
     }
 }
 

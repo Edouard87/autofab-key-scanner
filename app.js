@@ -8,6 +8,17 @@ var {PythonShell} = require("python-shell");
 
 const config = require("./config.json")
 
+if (!config.env.dev) {
+    const Lcd = require('lcd');
+    const lcd = new Lcd({
+        rs: 17,
+        e: 14,
+        data: [15, 18, 23, 24],
+        cols: 16,
+        rows: 2
+    });
+}
+
 const encrypt = require("socket.io-encrypt")
 var socket = require('socket.io-client')(config.server_ip + ":" + config.server_port);
 encrypt(config.secret)(socket)
@@ -44,74 +55,16 @@ socket.on('connect', function () {
     }
 });
 
-socket.on("readers_update", function() {
+socket.on("user", (data) => {
+    console.log("User Is: ", data)
 
-    socket.emit("readers_return", {
-        machine: config.machine,
-        ip: ip.address()
-    });
-
-});
-socket.on("status", data => {
-
-    console.log("Status: " + data.status)
-
-    if (data.status == "usr_match") {
-
-        console.log("The user was found. The user is " + data.user);
-
+    if (!config.env.dev) {
+        lcd.on('ready', _ => {
+            lcd.setCursor(8, 0);
+            lcd.autoscroll();
+            print(data.username);
+        });
     }
-
-    if (data.status == "authorized") {
-
-        console.log("authorized")
-        var sessionCheck = setInterval(function() {
-
-            console.log("checking...")
-
-            if (Math.floor(new Date().getTime() / 1000) >= data.end) {
-
-                clearInterval(sessionCheck)
-                console.log("session expired")
-
-            }
-
-        }, 100);
-        // console.log(sessionCheck)
-
-    } 
-
-    if (data.status == "no_rez") {
-
-        console.log("No resrevation was made for this time slot by you")
-        console.log("test")
-        console.log(data.machine)
-
-    }
-
-    if (data.status == "does_not_exist") {
-
-        console.log("The machine does not exist. Please reconfigure this scanner and supply an assigned ID")
-
-    }
-
-});
-socket.on("reader_change_machine", function(data) {
-
-    console.log("changing...")
-    console.log(data);
-
-    if (ip.address() == data.destination) {
-
-        fs.writeFileSync(__dirname + "/config.json", JSON.stringify({
-            machine: data.new_machine,
-            server_ip: config.server_ip,
-            server_port: config.server_port
-        }));
-        config = JSON.parse(fs.readFileSync(__dirname + "/config.json", "utf-8"));
-
-    }
-
 })
 
 socket.on("connect_error", function () {
@@ -119,3 +72,10 @@ socket.on("connect_error", function () {
     console.log("Unable to comnnect.")
 
 })
+
+if (!config.env.dev) {
+    process.on('SIGINT', _ => {
+        lcd.close();
+        process.exit();
+    });
+}
