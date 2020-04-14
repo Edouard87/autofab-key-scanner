@@ -12,7 +12,6 @@ let shell = new PythonShell('test.py', options);
 shell.send("Please scan your fob");
 
 shell.on('message', function (message) {
-    // received a message sent from the Python script (a simple "print" statement)
     console.log(message);
 });
 

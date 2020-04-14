@@ -42,3 +42,5 @@ stdin_fileno = sys.stdin
 for line in stdin_fileno:
     lcd.message(line.strip())
     print(line.strip())
+
+    
