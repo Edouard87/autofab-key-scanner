@@ -14,10 +14,7 @@ encrypt(config.secret)(socket)
 
 console.log("System starting up...")
 
-socket.on('connect', function () {
-    console.log("Connected!")
-    socket.emit("handshake", {text: config.text, ip: ip.address()})
-    let options = {
+let options = {
         mode: 'text',
         pythonPath: config.python,
         pythonOptions: ['-u'], // get print results in real-time
@@ -25,15 +22,26 @@ socket.on('connect', function () {
         args: ['value1', 'value2', 'value3']
     };
 
-    let shell = new PythonShell('read.py', options);
+socket.on('connect', function () {
+    console.log("Connected!")
+    socket.emit("handshake", {text: config.text, ip: ip.address()})
 
-    shell.on("message", message => {
-        console.log("message is: " + message)
+    if (config.env.dev) {
         socket.emit("scan", {
-            id: message,
+            id: config.env.rfid,
             ip: ip.address()
         })
-    })
+    } else {
+        let shell = new PythonShell('read.py', options);
+
+        shell.on("message", message => {
+            console.log("message is: " + message)
+            socket.emit("scan", {
+                id: message,
+                ip: ip.address()
+            })
+        })
+    }
 });
 
 socket.on("readers_update", function() {

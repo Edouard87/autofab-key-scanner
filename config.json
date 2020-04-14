@@ -1,8 +1,12 @@
 {
-    "server_ip":"https://autofab.herokuapp.com",
-    "server_port":443,
+    "server_ip":"http://localhost",
+    "server_port":3000,
     "text":"test reader",
     "secret":"secret",
-    "python": "/usr/local/bin/python"
+    "python": "/usr/local/bin/python",
+    "env": {
+        "dev":true,
+        "rfid":1234
+    }
 }
 
