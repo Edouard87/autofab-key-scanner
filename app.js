@@ -61,13 +61,15 @@ var msg = "Starting up..."
 
 socket.on("user", (data) => {
     console.log("User Is: ", data)
-    if (!config.env.dev) {
-        lcd.on('ready', _ => {
-            lcd.setCursor(0, 0);
-            lcd.print(data.username);
-        });
-    }
-})
+    msg = data.username
+});
+
+lcd.on('ready', _ => {
+    setInterval(() => {
+        lcd.setCursor(0, 0);
+        lcd.print(msg);
+    },1000);
+});
 
 socket.on("connect_error", function () {
 
