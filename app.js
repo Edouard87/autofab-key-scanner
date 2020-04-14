@@ -57,16 +57,17 @@ socket.on('connect', function () {
     }
 });
 
+var msg = "Starting up..."
+
+if (!config.env.dev) {
+    lcd.on('ready', _ => {
+        lcd.setCursor(0, 0);
+        print(msg);
+    });
+}
+
 socket.on("user", (data) => {
     console.log("User Is: ", data)
-
-    if (!config.env.dev) {
-        lcd.on('ready', _ => {
-            lcd.setCursor(8, 0);
-            lcd.autoscroll();
-            print(data.username);
-        });
-    }
 })
 
 socket.on("connect_error", function () {
