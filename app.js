@@ -8,9 +8,11 @@ var {PythonShell} = require("python-shell");
 
 const config = require("./config.json")
 
+const Lcd = require('lcd');
+var lcd;
+
 if (!config.env.dev) {
-    const Lcd = require('lcd');
-    const lcd = new Lcd({
+    lcd = new Lcd({
         rs: 17,
         e: 14,
         data: [15, 18, 23, 24],
