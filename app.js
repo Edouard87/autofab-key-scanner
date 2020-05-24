@@ -64,13 +64,20 @@ socket.on("user", (data) => {
     msg = data.username
 });
 
-lcd.on('ready', _ => {
+if (!config.env.dev) {
+    lcd.on('ready', _ => {
+        setInterval(() => {
+            lcd.clear()
+            lcd.setCursor(0, 0);
+            lcd.print(msg);
+        }, 1000);
+    });
+} else {
     setInterval(() => {
-	lcd.clear()
-        lcd.setCursor(0, 0);
-        lcd.print(msg);
-    },1000);
-});
+        console.log("LCD Message Is: " + msg)
+    }, 1000)
+}
+
 
 socket.on("connect_error", function () {
 

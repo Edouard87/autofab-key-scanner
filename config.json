@@ -1,11 +1,11 @@
 {
-    "server_ip":"http://192.168.21.127",
+    "server_ip":"http://localhost",
     "server_port":3000,
     "text":"test reader",
     "secret":"secret",
     "python": "/usr/bin/python",
     "env": {
-        "dev":false,
+        "dev":true,
         "rfid": 1234
     }
 }
